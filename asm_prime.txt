@@ -1,0 +1,77 @@
+.model small
+.stack 200h
+.data
+numar dw ?
+msg1 db "Numarul este prim $"
+msg2 db "Numarul NU este prim $"
+msg3 db "Introduceti un numar: $"
+.code
+call citireNr
+mov numar,dx
+mov bx,numar
+xor cl,cl
+pas1:
+xor dx,dx
+xor ax,ax
+mov ax,numar
+cmp ax,2
+je prim
+dec bx
+div bx
+cmp dx,0
+jne pas2
+inc cl
+pas2:
+cmp cl,1
+je notprim
+cmp bx,2
+ja pas1
+prim:
+mov dx,offset msg1
+mov ah,09h
+int 21h
+jmp finish
+
+notprim:
+mov dx,offset msg2
+mov ah,09h
+int 21h
+jmp finish
+citireNr proc
+mov ax, @DaTa
+mov ds, ax
+
+mov dx,offset msg3
+mov ah,09h
+int 21h
+
+xor bx, bx
+mov cx, 10
+
+mov ah, 01h
+int 21h
+		
+sub al, 48
+mov ah, 0
+mov dx, ax
+		
+citireCifra:
+	mov ah, 01h
+	int 21h
+	cmp al, 13
+		je amTerminat
+	sub al, 48
+	mov bl, al
+	mov ax, dx
+	mul cx
+	add ax, bx
+	mov dx, ax
+	jmp citireCifra
+
+amTerminat:
+ret
+endp
+finish:
+mov ah,4ch
+int 21h
+end
